@@ -1,5 +1,6 @@
 import express from 'express';
 import { errorHandler } from './middlewares/error-handler.js';
+import { authRouter } from './routes/auth.routes.js';
 import { coursesRouter } from './routes/courses.routes.js';
 import { usersRouter } from './routes/users.routes.js';
 
@@ -9,6 +10,7 @@ export const app = express();
 
 app.use(express.json());
 
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/courses', coursesRouter);
 app.use('/api/v1/users', usersRouter);
 

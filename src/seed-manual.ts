@@ -1,19 +1,25 @@
 // Seed de AcademIA. Idempotente: se puede ejecutar varias veces seguidas.
 // Ejecutar: npx tsx src/seed-manual.ts
 import { prisma } from './db.js';
+import { hashPassword } from './services/password.js';
 
-const PLACEHOLDER = 'hashed-password-placeholder'; // sesión 4: Argon2id
+// Sesión 4: contraseñas hasheadas de verdad. Todos los usuarios de prueba
+// usan la misma para poder hacer login en clase.
+export const SEED_PASSWORD = 'Passw0rd!';
+const passwordHash = await hashPassword(SEED_PASSWORD);
 
 async function upsertUser(email: string, name: string, role: 'STUDENT' | 'INSTRUCTOR' | 'ADMIN') {
   return prisma.user.upsert({
     where: { email },
-    update: {},
-    create: { email, name, password: PLACEHOLDER, role },
+    update: { password: passwordHash, role }, // re-ejecutar el seed actualiza los hashes antiguos
+    create: { email, name, password: passwordHash, role },
   });
 }
 
 async function main() {
   const marta = await upsertUser('marta@academia.dev', 'Marta', 'INSTRUCTOR');
+  await upsertUser('pablo@academia.dev', 'Pablo', 'INSTRUCTOR'); // segundo instructor: para probar ownership
+  await upsertUser('admin@academia.dev', 'Admin', 'ADMIN');
   const students = await Promise.all([
     upsertUser('luis@academia.dev', 'Luis', 'STUDENT'),
     upsertUser('sara@academia.dev', 'Sara', 'STUDENT'),
