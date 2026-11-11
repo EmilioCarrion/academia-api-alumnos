@@ -8,14 +8,15 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  name          String
-  password      String
-  role          Role     @default(STUDENT)
-  createdAt     DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
 
   coursesTaught Course[]
+  enrollments   Enrollment[]
 }
 
 enum Role {
@@ -25,16 +26,23 @@ enum Role {
 }
 
 model Course {
-  id           Int      @id @default(autoincrement())
-  title        String
-  description  String?
-  price        Decimal  @db.Decimal(10, 2)
-  published    Boolean  @default(false)
-  level        Level    @default(BEGINNER)
-  createdAt    DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  published   Boolean  @default(false)
+  level       Level    @default(BEGINNER)
+  createdAt   DateTime @default(now())
+
+  maxSeats Int @default(20)
 
   instructorId Int
-  instructor   User     @relation(fields: [instructorId], references: [id])
+  instructor   User @relation(fields: [instructorId], references: [id])
+
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  enrollments Enrollment[]
 }
 
 enum Level {
@@ -44,6 +52,27 @@ enum Level {
 }
 
 model Category {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  courses Course[]
+}
+
+model Enrollment {
+  id         Int              @id @default(autoincrement())
+  userId     Int
+  courseId   Int
+  status     EnrollmentStatus @default(ACTIVE)
+  grade      Int?
+  enrolledAt DateTime         @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
 }
