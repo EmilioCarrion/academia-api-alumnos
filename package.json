@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "Proyecto guía AcademIA — bloque ORMs, APIs REST y Seguridad (EDEM)",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "db:up": "docker compose up -d",
     "db:migrate": "prisma migrate dev && prisma generate",
     "db:generate": "prisma generate",
@@ -15,6 +17,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^26.6.6",
     "prisma": "^7.10.1",
     "tsx": "^4.23.15",
@@ -24,7 +27,9 @@
     "@prisma/adapter-pg": "^7.10.1",
     "@prisma/client": "^7.10.1",
     "dotenv": "^18.0.10",
-    "pg": "^8.23.1"
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
   },
   "private": true,
   "engines": {
