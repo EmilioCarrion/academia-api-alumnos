@@ -29,6 +29,7 @@ model Course {
   title        String
   description  String?
   price        Decimal  @db.Decimal(10, 2)
+  published    Boolean  @default(false)
   level        Level    @default(BEGINNER)
   createdAt    DateTime @default(now())
 
@@ -40,4 +41,9 @@ enum Level {
   BEGINNER
   INTERMEDIATE
   ADVANCED
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @unique
 }
