@@ -1,6 +1,6 @@
 import { Prisma } from '../../generated/prisma/client.js';
 import { prisma } from '../db.js';
-import { ConflictError, NotFoundError } from '../errors.js';
+import { ConflictError, NotFoundError } from '../errors/app-error.js';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -14,7 +14,7 @@ type Options = { latencyMs?: number };
 export async function enrollStudentNaive(userId: number, courseId: number, { latencyMs = 0 }: Options = {}) {
   return prisma.$transaction(async (tx) => {
     const course = await tx.course.findUnique({ where: { id: courseId } });
-    if (!course) throw new NotFoundError('Course not found');
+    if (!course) throw new NotFoundError('Course');
 
     const taken = await tx.enrollment.count({ where: { courseId, status: 'ACTIVE' } });
     await sleep(latencyMs);
@@ -43,7 +43,7 @@ export async function enrollStudent(userId: number, courseId: number, { latencyM
       return await prisma.$transaction(
         async (tx) => {
           const course = await tx.course.findUnique({ where: { id: courseId } });
-          if (!course) throw new NotFoundError('Course not found');
+          if (!course) throw new NotFoundError('Course');
 
           // Solo cuentan las activas: una inscripción CANCELLED libera plaza
           const taken = await tx.enrollment.count({ where: { courseId, status: 'ACTIVE' } });
