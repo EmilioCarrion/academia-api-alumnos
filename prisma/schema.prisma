@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String
+  password      String
+  role          Role     @default(STUDENT)
+  createdAt     DateTime @default(now())
+
+  coursesTaught Course[]
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model Course {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String?
+  price        Decimal  @db.Decimal(10, 2)
+  level        Level    @default(BEGINNER)
+  createdAt    DateTime @default(now())
+
+  instructorId Int
+  instructor   User     @relation(fields: [instructorId], references: [id])
+}
+
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
